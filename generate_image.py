@@ -113,7 +113,11 @@ def generate_images(
     G = Generator(z_dim=512, c_dim=0, w_dim=512, img_resolution=net_res, img_channels=3).to(device).eval().requires_grad_(False)
     copy_params_and_buffers(G_saved, G, require_all=True)
 
-    os.makedirs(outdir, exist_ok=True)
+    outdir_is_file = False
+    if outdir.endswith('.jpg') or outdir.endswith('.png'):
+        outdir_is_file = True
+    else:
+        os.makedirs(outdir, exist_ok=True)
 
     # no Labels.
     label = torch.zeros([1, G.c_dim], device=device)
@@ -160,7 +164,9 @@ def generate_images(
             output = G(image, mask, z, label, truncation_psi=truncation_psi, noise_mode=noise_mode)
             output = (output.permute(0, 2, 3, 1) * 127.5 + 127.5).round().clamp(0, 255).to(torch.uint8)
             output = output[0].cpu().numpy()
-            PIL.Image.fromarray(output, 'RGB').save(f'{outdir}/{iname}')
+            
+            output_file = f'{outdir}' if outdir_is_file else f'{outdir}/{iname}'
+            PIL.Image.fromarray(output, 'RGB').save(output_file)
 
 
 if __name__ == "__main__":
