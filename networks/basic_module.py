@@ -199,7 +199,7 @@ class StyleConv(torch.nn.Module):
                         * self.noise_strength
             if noise_mode == 'const':
                 noise = self.noise_const * self.noise_strength
-            print(f'x:{x.shape} noise:{noise.shape}')
+            print(f'x:{x.shape} noise:{noise.shape} {noise_mode}')
             x = x + noise
 
         act_gain = self.act_gain * gain
