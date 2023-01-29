@@ -11,6 +11,7 @@ import cv2
 import pyspng
 import glob
 import os
+import os.path
 import re
 import random
 from typing import List, Optional
@@ -87,11 +88,21 @@ def generate_images(
     torch.cuda.manual_seed(seed)
 
     print(f'Loading data from: {dpath}')
-    img_list = sorted(glob.glob(dpath + '/*.png') + glob.glob(dpath + '/*.jpg'))
+    if os.path.isfile(dpath):
+        img_list = [dpath]
+    elif os.path.isdir(dpath):
+        img_list = sorted(glob.glob(dpath + '/*.png') + glob.glob(dpath + '/*.jpg'))
+    else:
+        raise ValueError(f'{dpath} is neither a file nor a directory')
 
     if mpath is not None:
         print(f'Loading mask from: {mpath}')
-        mask_list = sorted(glob.glob(mpath + '/*.png') + glob.glob(mpath + '/*.jpg'))
+        if os.path.isfile(mpath):
+            mask_list = [mpath]
+        elif os.path.isdir(mpath):
+            mask_list = sorted(glob.glob(mpath + '/*.png') + glob.glob(mpath + '/*.jpg'))
+        else:
+            raise ValueError(f'{mpath} is neither a file nor a directory')
         assert len(img_list) == len(mask_list), 'illegal mapping'
 
     print(f'Loading networks from: {network_pkl}')
