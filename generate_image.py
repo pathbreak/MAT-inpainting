@@ -111,7 +111,8 @@ def generate_images(
         G_saved = legacy.load_network_pkl(f)['G_ema'].to(device).eval().requires_grad_(False) # type: ignore
     net_res = 512 if resolution > 512 else resolution
     G = Generator(z_dim=512, c_dim=0, w_dim=512, img_resolution=net_res, img_channels=3).to(device).eval().requires_grad_(False)
-    copy_params_and_buffers(G_saved, G, require_all=True)
+    #copy_params_and_buffers(G_saved, G, require_all=True)
+    copy_params_and_buffers(G_saved, G, require_all=False)
 
     outdir_is_file = False
     if outdir.endswith('.jpg') or outdir.endswith('.png'):
